@@ -1,14 +1,12 @@
-import List from "@mui/material/List";
-import ListItem from "@mui/material/ListItem";
-import ListItemButton from "@mui/material/ListItemButton";
-import ListItemText from "@mui/material/ListItemText";
-import { Button, TextField } from "@mui/material";
-import { styled } from "styled-components";
-import { useMutation, useQuery } from "@apollo/client";
-import { ADD_ITEM_MUTATION, GET_TODO_LIST } from "./queries";
-import { Delete, Edit } from "@mui/icons-material";
-import { useState } from "react";
+import { useMutation } from "@apollo/client";
 import { getOperationName } from "@apollo/client/utilities";
+import { Alert, Collapse } from "@mui/material";
+import List from "@mui/material/List";
+import { useState } from "react";
+import styled from "styled-components";
+import CustomActions from "./components/CustomActions";
+import CustomList from "./components/CustomList";
+import { ADD_ITEM_MUTATION, GET_TODO_LIST } from "./queries";
 
 const Container = styled.div`
   display: flex;
@@ -45,12 +43,6 @@ const ContainerListItem = styled.div`
   overflow: auto;
 `;
 
-const ContainerButton = styled.div`
-  display: flex;
-  justify-content: space-around;
-  gap: 10px;
-`;
-
 const Title = styled.div`
   font-weight: bold;
   font-size: 28px;
@@ -58,92 +50,56 @@ const Title = styled.div`
 
 export default function CheckboxList() {
   const [item, setItem] = useState("");
-  const { data } = useQuery(GET_TODO_LIST);
+  const [filter, setFilter] = useState();
+  const [error, setError] = useState(false);
 
   const [addItem] = useMutation(ADD_ITEM_MUTATION);
 
+  /**
+   * Adiciona um item na lista.
+   * @param {*} event - Evento do click do botão salvar.
+   */
   const onSubmit = async (event) => {
-    event.preventDefault();
-    await addItem({
-      variables: {
-        values: {
-          name: item,
+    try {
+      event.preventDefault();
+      await addItem({
+        variables: {
+          values: {
+            name: item,
+          },
         },
-      },
-      awaitRefetchQueries: true,
-      refetchQueries: [getOperationName(GET_TODO_LIST)],
-    });
-    setItem("");
+        awaitRefetchQueries: true,
+        refetchQueries: [getOperationName(GET_TODO_LIST)],
+      });
+      setItem("");
+    }
+    catch (e) {
+      setError(true);
+    }
   };
 
-  const onDelete = async (event) => {
-    console.log(onDelete);
-    // Aqui você irá implementar a chamada para o backend de remoção de item
-  };
-
-  const onUpdate = async (event) => {
-    console.log(onUpdate);
-    // Aqui você irá implementar a chamada para o backend de edição de item
-  };
-
-  const onFilter = async (event) => {
-    console.log(onFilter);
-    // Aqui você irá implementar a chamada para o backend para fazer o filtro
+  /**
+   * Realiza o filtro da listagem.
+   */
+  const onFilter = async () => {
+    setFilter({ name: item });
   };
 
   return (
     <Container>
+      <Collapse in={error}>
+        <Alert severity="warning" onClose={() => { setError(false) }}>
+          Oops!. Já existe um item com esse nome.
+        </Alert>
+      </Collapse>
       <ContainerList>
         <Title>TODO LIST</Title>
         <ContainerTop onSubmit={onSubmit}>
-          <TextField
-            id="item"
-            label="Digite aqui"
-            value={item}
-            type="text"
-            variant="standard"
-            onChange={(e) => setItem(e?.target?.value)}
-          />
-          <ContainerButton>
-            <Button
-              variant="contained"
-              sx={{ width: "100%" }}
-              color="info"
-              onClick={onFilter}
-            >
-              Filtrar
-            </Button>
-            <Button
-              variant="contained"
-              sx={{ width: "100%" }}
-              color="success"
-              type="submit"
-            >
-              Salvar
-            </Button>
-          </ContainerButton>
+          <CustomActions item={item} setItem={setItem} onFilter={onFilter} />
         </ContainerTop>
         <List sx={{ width: "100%" }}>
           <ContainerListItem>
-            {data?.todoList?.map((value, index) => {
-              return (
-                <ListItem
-                  key={index}
-                  disablePadding
-                  sx={{
-                    borderRadius: "5px",
-                    marginTop: "5px",
-                    marginBottom: "5px",
-                  }}
-                >
-                  <ListItemButton dense>
-                    <ListItemText id={index} primary={value?.name} />
-                    <Edit onClick={onUpdate} />
-                    <Delete onClick={onDelete} />
-                  </ListItemButton>
-                </ListItem>
-              );
-            })}
+            <CustomList filter={filter} />
           </ContainerListItem>
         </List>
       </ContainerList>

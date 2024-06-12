@@ -1,6 +1,7 @@
 const { ApolloServer } = require("@apollo/server");
 const { startStandaloneServer } = require("@apollo/server/standalone");
 const { TODO_LIST } = require("./makeData");
+const { GraphQLError } = require("graphql");
 
 /**
  * Gera um número inteiro para utilizar de id
@@ -39,25 +40,32 @@ const typeDefs = `#graphql
 const resolvers = {
   Query: {
     todoList: (_, { filter }) => {
-      // Aqui você irá implementar o filtro dos itens
-      console.log(filter);
+      if (filter) return TODO_LIST.filter((item) => item.name.includes(filter.name));
       return TODO_LIST;
     },
   },
   Mutation: {
     addItem: (_, { values: { name } }) => {
+      let founded = TODO_LIST.find((item) => item.name == name);
+      if (founded) {
+        throw new GraphQLError('An item with that name already exists.', {
+          extensions: {
+            code: '400',
+          },
+        });
+      }
       TODO_LIST.push({
         id: getRandomInt(),
         name,
       });
     },
     updateItem: (_, { values: { id, name } }) => {
-      // Aqui você irá implementar a edição do item
-      console.log(id, name);
+      let item = TODO_LIST.find((item) => item.id == id);
+      item.name = name;
     },
     deleteItem: (_, { id }) => {
-      // Aqui você irá implementar a remoção do item
-      console.log(id);
+      let index = TODO_LIST.findIndex((item) => item.id == id);
+      TODO_LIST.splice(index, 1);
     },
   },
 };
