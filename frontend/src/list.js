@@ -105,20 +105,10 @@ export default function CheckboxList() {
             onChange={(e) => setItem(e?.target?.value)}
           />
           <ContainerButton>
-            <Button
-              variant="contained"
-              sx={{ width: "100%" }}
-              color="info"
-              onClick={onFilter}
-            >
+            <Button variant="contained" sx={{ width: "100%" }} color="info" onClick={onFilter}>
               Filtrar
             </Button>
-            <Button
-              variant="contained"
-              sx={{ width: "100%" }}
-              color="success"
-              type="submit"
-            >
+            <Button variant="contained" sx={{ width: "100%" }} color="success" type="submit">
               Salvar
             </Button>
           </ContainerButton>
