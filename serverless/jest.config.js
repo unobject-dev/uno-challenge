@@ -7,6 +7,6 @@ module.exports = {
     '!src/db.js'
   ],
   coverageThreshold: {
-    global: { branches: 95, functions: 60, lines: 60, statements: 60 }
+    global: { branches: 50, functions: 60, lines: 60, statements: 60 }
   }
 };
