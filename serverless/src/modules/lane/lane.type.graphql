@@ -1,0 +1,28 @@
+type Lane {
+  id: Int
+  name: String
+  position: Int
+  created_at: String
+  updated_at: String
+}
+
+input LaneInput {
+  name: String!
+  position: Int!
+}
+
+input LaneUpdateInput {
+  name: String
+  position: Int
+}
+
+extend type Query {
+  lanes: [Lane]
+  lane(id: Int!): Lane
+}
+
+extend type Mutation {
+  createLane(values: LaneInput!): Lane
+  updateLane(id: Int!, values: LaneUpdateInput!): Lane
+  deleteLane(id: Int!): Boolean
+}
