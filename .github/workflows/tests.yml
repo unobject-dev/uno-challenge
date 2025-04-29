@@ -39,8 +39,9 @@ jobs:
         with:
           node-version: 18
           cache: npm
+          cache-dependency-path: serverless/package-lock.json
 
-      - run: npm install
+      - run: npm ci
         working-directory: serverless
 
       - run: npm test
