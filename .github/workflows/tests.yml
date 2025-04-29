@@ -1,0 +1,49 @@
+name: server-tests
+
+on:
+  push:
+    branches: ['**']
+  pull_request:
+
+jobs:
+  jest:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:15-alpine
+        env:
+          POSTGRES_USER: todo
+          POSTGRES_PASSWORD: todo
+          POSTGRES_DB: tododb
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      DB_HOST: localhost
+      DB_PORT: 5432
+      DB_USER: todo
+      DB_PASS: todo
+      DB_NAME: tododb
+      NODE_ENV: test
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: npm
+
+      - run: npm install
+        working-directory: serverless
+
+      - run: npm test
+        working-directory: serverless
+        env:
+          FORCE_COLOR: 1
