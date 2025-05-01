@@ -8,6 +8,8 @@ import {
   Button,
 } from '@mui/material';
 import { useUpdateTodo } from '../hooks';
+import { getOperationName } from '@apollo/client/utilities';
+import { LANES_TODOS_QUERY } from '../../../api/graphql/queries';
 
 const RenameTodoModal = ({ open, onClose, todo }) => {
   const [updateTodo] = useUpdateTodo();
@@ -30,6 +32,7 @@ const RenameTodoModal = ({ open, onClose, todo }) => {
     await updateTodo({
       variables: { values: updatedTodo },
       awaitRefetchQueries: true,
+      refetchQueries: [getOperationName(LANES_TODOS_QUERY)],
     });
 
     onClose();
