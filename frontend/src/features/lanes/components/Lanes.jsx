@@ -19,7 +19,7 @@ const ScrollBox = styled.div`
 `;
 
 const Lanes = () => {
-  const { data, loading } = useLanesWithTodos();
+  const { data, loading, refetch } = useLanesWithTodos();
   const [updateTodo] = useUpdateTodo();
 
   if (loading) {
@@ -31,7 +31,6 @@ const Lanes = () => {
 
   const onDragEnd = async (result) => {
     const { destination, draggableId } = result;
-
     if (!destination) {
       return;
     }
@@ -47,6 +46,8 @@ const Lanes = () => {
       variables: { values: updatedTodo },
       awaitRefetchQueries: true,
     });
+
+    await refetch();
   };
 
   const columns = lanes.map((lane) => {
