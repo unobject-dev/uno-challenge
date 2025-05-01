@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import { useAddTodo } from '../hooks';
 import { Lanes } from '../../lanes';
 import { getOperationName } from '@apollo/client/utilities';
-import { TODOS_QUERY } from '../../../api/graphql/queries';
+import { LANES_TODOS_QUERY } from '../../../api/graphql/queries';
 
 const Wrapper = styled.div`
   display: flex;
@@ -102,7 +102,7 @@ const TodoList = () => {
     await addTodo({
       variables: { values: { name } },
       awaitRefetchQueries: true,
-      refetchQueries: [getOperationName(TODOS_QUERY)],
+      refetchQueries: [getOperationName(LANES_TODOS_QUERY)],
     });
   };
 

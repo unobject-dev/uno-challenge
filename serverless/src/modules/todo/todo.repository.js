@@ -23,7 +23,7 @@ const findByName = async (name) => {
 };
 
 const insert = async (name) => {
-  const created = await Todo.create({ name });
+  const created = await Todo.create({ name, lane_id: 1 });
 
   return created;
 };
