@@ -2,6 +2,7 @@ type Lane {
   id: Int
   name: String
   position: Int
+  is_done: Boolean
   todos: [Item]
   created_at: String
   updated_at: String
@@ -10,11 +11,13 @@ type Lane {
 input LaneInput {
   name: String!
   position: Int!
+  is_done: Boolean
 }
 
 input LaneUpdateInput {
   name: String
   position: Int
+  is_done: Boolean
 }
 
 extend type Query {

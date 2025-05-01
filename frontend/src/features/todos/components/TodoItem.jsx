@@ -5,7 +5,7 @@ import { Draggable } from '@hello-pangea/dnd';
 import RenameTodoModal from './RenameTodoModal';
 import DeleteTodoModal from './DeleteTodoModal';
 
-const TodoItem = ({ todo, index }) => {
+const TodoItem = ({ todo, index, done }) => {
   const [openRename, setOpenRename] = useState(false);
   const [openDelete, setOpenDelete] = useState(false);
 
@@ -21,12 +21,26 @@ const TodoItem = ({ todo, index }) => {
             {...prov.draggableProps}
             {...prov.dragHandleProps}
             disablePadding
-            sx={{ mb: 1, borderRadius: 1, background: '#fff' }}
+            sx={{ mb: 1, borderRadius: 1, background: '#fff', opacity: done ? 0.6 : 1 }}
           >
             <ListItemButton dense>
-              <ListItemText primary={todo.name} />
-              <Edit sx={{ cursor: 'pointer', mr: 1 }} onClick={rename} />
-              <DeleteIcon sx={{ cursor: 'pointer' }} onClick={remove} />
+              <ListItemText
+                primaryTypographyProps={{
+                  style: {
+                    textDecoration: done ? 'line-through' : 'none',
+                    color: done ? 'gray' : undefined,
+                  },
+                }}
+                primary={todo.name}
+              />
+              <Edit
+                sx={{ cursor: 'pointer', mr: 1, color: done ? 'gray' : 'inherit' }}
+                onClick={rename}
+              />
+              <DeleteIcon
+                sx={{ cursor: 'pointer', color: done ? 'gray' : 'inherit' }}
+                onClick={remove}
+              />
             </ListItemButton>
           </ListItem>
         )}

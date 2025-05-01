@@ -54,7 +54,7 @@ const Lanes = () => {
     const body = (
       <ScrollBox>
         {lane.todos.map((todo, idx) => (
-          <TodoItem key={todo.id} todo={todo} index={idx} />
+          <TodoItem key={todo.id} todo={todo} index={idx} done={lane.is_done} />
         ))}
       </ScrollBox>
     );

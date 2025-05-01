@@ -32,6 +32,7 @@ export const LANES_TODOS_QUERY = gql`
       id
       name
       position
+      is_done
       todos {
         id
         name
