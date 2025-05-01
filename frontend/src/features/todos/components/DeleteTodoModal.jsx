@@ -13,13 +13,18 @@ const DeleteTodoModal = ({ open, onClose, todo }) => {
       return;
     }
 
-    await deleteTodo({
-      variables: { id: todo.id },
-      awaitRefetchQueries: true,
-      refetchQueries: [getOperationName(LANES_TODOS_QUERY)],
-    });
+    try {
+      await deleteTodo({
+        variables: { id: todo.id },
+        awaitRefetchQueries: true,
+        refetchQueries: [getOperationName(LANES_TODOS_QUERY)],
+      });
 
-    toast.success('Task Deleted');
+      toast.success('Task Deleted');
+    } catch (error) {
+      toast.error(`Was not possible to edit Task. Error: ${error.message}`);
+    }
+
     onClose();
   };
 

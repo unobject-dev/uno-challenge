@@ -11,13 +11,12 @@ const createItem = async ({ name }) => {
   }
 
   const existing = await repository.findByName(name.trim());
+
   if (existing) {
     throw new Error('Duplicate item');
   }
 
   await repository.insert(name.trim());
-
-  return true;
 };
 
 const renameItem = async (todo) => {

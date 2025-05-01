@@ -30,13 +30,17 @@ const RenameTodoModal = ({ open, onClose, todo }) => {
     const updatedTodo = { ...todo, name: newName };
     delete updatedTodo.__typename;
 
-    await updateTodo({
-      variables: { values: updatedTodo },
-      awaitRefetchQueries: true,
-      refetchQueries: [getOperationName(LANES_TODOS_QUERY)],
-    });
-
-    toast.success('Task Renamed');
+    try {      
+      await updateTodo({
+        variables: { values: updatedTodo },
+        awaitRefetchQueries: true,
+        refetchQueries: [getOperationName(LANES_TODOS_QUERY)],
+      });
+  
+      toast.success('Task Renamed');
+    } catch (error) {
+      toast.error(`Was not possible to edit Task. Error: ${error.message}`)
+    }
     onClose();
   };
 

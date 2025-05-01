@@ -106,16 +106,21 @@ const TodoList = () => {
 
   const saveTodo = async (name) => {
     if (!name) {
+      toast.info(`Task name can not be empty!`)
       return;
     }
 
-    await addTodo({
-      variables: { values: { name } },
-      awaitRefetchQueries: true,
-      refetchQueries: [getOperationName(LANES_TODOS_QUERY)],
-    });
+    try {
+      await addTodo({
+        variables: { values: { name } },
+        awaitRefetchQueries: true,
+        refetchQueries: [getOperationName(LANES_TODOS_QUERY)],
+      })
 
-    toast.success('New Task Added');
+      toast.success('New Task Added');
+    } catch (error) {
+      toast.error(`Was not possible to add Task. Error: ${error.message}`)
+    }
   };
 
   const applyFilter = (text) => {
