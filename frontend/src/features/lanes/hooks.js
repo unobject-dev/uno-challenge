@@ -7,7 +7,8 @@ export const useLanes = () => {
 };
 
 export const useLanesWithTodos = () => {
-  const query = useQuery(LANES_TODOS_QUERY, { fetchPolicy: 'cache-first' });
-  return query;
-}
-
+  return useQuery(LANES_TODOS_QUERY, {
+    variables: { filter: null },
+    fetchPolicy: 'cache-first',
+  });
+};

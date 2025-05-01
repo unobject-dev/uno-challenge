@@ -11,8 +11,8 @@ const queryResolvers = {
     return row;
   },
 
-  lanesWithItem: async (_parent, { id }) => {
-    const rows = await service.listLanesWithTodo();
+  lanesWithItem: async (_parent, { filter }) => {
+    const rows = await service.listLanesWithTodo(filter);
     return rows;
   },
 

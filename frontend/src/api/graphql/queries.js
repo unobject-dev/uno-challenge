@@ -27,8 +27,8 @@ export const LANES_QUERY = gql`
 `;
 
 export const LANES_TODOS_QUERY = gql`
-  query LanesWithItem {
-    lanesWithItem {
+  query LanesWithItem($filter: ItemFilter) {
+    lanesWithItem(filter: $filter) {
       id
       name
       position

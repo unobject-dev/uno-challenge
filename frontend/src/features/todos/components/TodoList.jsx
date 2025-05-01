@@ -6,6 +6,7 @@ import { Lanes } from '../../lanes';
 import { getOperationName } from '@apollo/client/utilities';
 import { LANES_TODOS_QUERY } from '../../../api/graphql/queries';
 import { toast } from 'react-toastify/dist/index.js';
+import { useLanesWithTodos } from '../../lanes/hooks';
 
 const Wrapper = styled.div`
   display: flex;
@@ -41,17 +42,10 @@ const Toolbar = ({ onApply }) => {
         label="Filter"
         variant="standard"
         value={text}
-        onChange={(e) => {
-          setText(e.target.value);
-        }}
+        onChange={(e) => setText(e.target.value)}
         sx={{ flex: 1 }}
       />
-      <Button
-        variant="contained"
-        color="info"
-        sx={{ minWidth: 100 }}
-        onClick={apply}
-      >
+      <Button variant="contained" color="info" sx={{ minWidth: 100 }} onClick={apply}>
         Apply
       </Button>
     </Row>
@@ -74,17 +68,10 @@ const TodoForm = ({ onSave }) => {
           label="New task"
           variant="standard"
           value={name}
-          onChange={(e) => {
-            setName(e.target.value);
-          }}
+          onChange={(e) => setName(e.target.value)}
           sx={{ flex: 1 }}
         />
-        <Button
-          type="submit"
-          variant="contained"
-          color="success"
-          sx={{ minWidth: 100 }}
-        >
+        <Button type="submit" variant="contained" color="success" sx={{ minWidth: 100 }}>
           Save
         </Button>
       </Row>
@@ -94,6 +81,7 @@ const TodoForm = ({ onSave }) => {
 
 const TodoList = () => {
   const [addTodo] = useAddTodo();
+  const { refetch } = useLanesWithTodos();
 
   const saveTodo = async (name) => {
     if (!name) {
@@ -111,7 +99,7 @@ const TodoList = () => {
 
   const applyFilter = (text) => {
     const filter = text ? { name: text } : null;
-    // refetch({ filter });
+    refetch({ filter });
   };
 
   return (

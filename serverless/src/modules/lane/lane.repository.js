@@ -1,14 +1,22 @@
 const Lane = require('./lane.model');
 const Todo = require('../todo/todo.model');
+const { Op } = require('sequelize');
 
-const laneWIthTodos = async () => {
+const laneWIthTodos = async (filter) => {
+  const todoWhere = filter?.name ? { name: { [Op.iLike]: `%${filter.name}%` } } : undefined;
+
   const lanes = await Lane.findAll({
-    include: { model: Todo, as: 'todos' },
+    include: {
+      model: Todo,
+      as: 'todos',
+      where: todoWhere,
+      required: false,
+    },
     order: [['position', 'ASC']],
   });
 
-  return lanes.map(lane => lane.get({ plain: true }));
-}
+  return lanes.map((lane) => lane.get({ plain: true }));
+};
 
 const findAll = async () => {
   const rows = await Lane.findAll({ order: [['position', 'ASC']] });

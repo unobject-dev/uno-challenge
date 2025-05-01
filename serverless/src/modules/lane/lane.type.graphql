@@ -20,7 +20,7 @@ input LaneUpdateInput {
 extend type Query {
   lanes: [Lane]
   lane(id: Int!): Lane
-  lanesWithItem: [Lane]
+  lanesWithItem(filter: ItemFilter): [Lane]
 }
 
 extend type Mutation {

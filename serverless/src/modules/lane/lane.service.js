@@ -5,8 +5,8 @@ const listLanes = async () => {
   return lanes;
 };
 
-const listLanesWithTodo = async () => {
-  const lanesWithTodo = await repo.laneWIthTodos();
+const listLanesWithTodo = async (filter) => {
+  const lanesWithTodo = await repo.laneWIthTodos(filter);
   return lanesWithTodo;
 };
 
