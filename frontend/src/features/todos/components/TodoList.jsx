@@ -1,8 +1,5 @@
 import { useState } from 'react';
-import {
-  TextField,
-  Button,
-} from '@mui/material';
+import { TextField, Button } from '@mui/material';
 import styled from 'styled-components';
 import { useAddTodo } from '../hooks';
 import { Lanes } from '../../lanes';
@@ -94,7 +91,6 @@ const TodoForm = ({ onSave }) => {
   );
 };
 
-
 const TodoList = () => {
   const [addTodo] = useAddTodo();
 
@@ -106,13 +102,13 @@ const TodoList = () => {
     await addTodo({
       variables: { values: { name } },
       awaitRefetchQueries: true,
-      refetchQueries: [getOperationName(TODOS_QUERY)], //TODO: testar para ver se é desncessário.
+      refetchQueries: [getOperationName(TODOS_QUERY)],
     });
   };
 
   const applyFilter = (text) => {
     const filter = text ? { name: text } : null;
-    refetch({ filter });
+    // refetch({ filter });
   };
 
   return (

@@ -18,7 +18,7 @@ const ScrollBox = styled.div`
   overflow-y: auto;
 `;
 
-const Lanes = ({ todos }) => {
+const Lanes = () => {
   const { data, loading } = useLanesWithTodos();
   const [updateTodo] = useUpdateTodo();
 
@@ -27,6 +27,7 @@ const Lanes = ({ todos }) => {
   }
 
   const lanes = data?.lanesWithItem ?? [];
+  const todos = lanes.flatMap((lane) => lane.todos);
 
   const onDragEnd = async (result) => {
     const { destination, draggableId } = result;
@@ -35,11 +36,11 @@ const Lanes = ({ todos }) => {
       return;
     }
 
-    const destLaneId = parseInt(destination.droppableId, 10) - 1;
+    const destLaneId = parseInt(destination.droppableId, 10);
     const todoId = parseInt(draggableId, 10);
 
-    const todoData = todos.find(todoItem => todoItem.id === todoId);
-    const updatedTodo = {...todoData, lane_id: destLaneId};
+    const todoData = todos.find((todoItem) => todoItem.id === todoId);
+    const updatedTodo = { ...todoData, lane_id: destLaneId };
     delete updatedTodo.__typename;
 
     await updateTodo({
@@ -47,26 +48,22 @@ const Lanes = ({ todos }) => {
       awaitRefetchQueries: true,
     });
   };
-  console.log(lanes, 'lanes')
-  const columns = lanes
-    .slice()
-    .map((lane) => {
-      const list = lane.todos;
 
-      const body = (
-        <ScrollBox>
-          {list.map((todo, idx) => (
-            <TodoItem key={todo.id} todo={todo} index={idx} />
-          ))}
-        </ScrollBox>
-      );
+  const columns = lanes.map((lane) => {
+    const body = (
+      <ScrollBox>
+        {lane.todos.map((todo, idx) => (
+          <TodoItem key={todo.id} todo={todo} index={idx} />
+        ))}
+      </ScrollBox>
+    );
 
-      return (
-        <LaneColumn key={lane.id} lane={lane}>
-          {body}
-        </LaneColumn>
-      );
-    });
+    return (
+      <LaneColumn key={lane.id} lane={lane}>
+        {body}
+      </LaneColumn>
+    );
+  });
 
   return (
     <DragDropContext onDragEnd={onDragEnd}>
