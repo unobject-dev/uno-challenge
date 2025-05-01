@@ -36,7 +36,7 @@ const RenameTodoModal = ({ open, onClose, todo }) => {
       refetchQueries: [getOperationName(LANES_TODOS_QUERY)],
     });
 
-    toast.success('Task renamed');
+    toast.success('Task Renamed');
     onClose();
   };
 

@@ -19,13 +19,15 @@ const DeleteTodoModal = ({ open, onClose, todo }) => {
       refetchQueries: [getOperationName(LANES_TODOS_QUERY)],
     });
 
-    toast.success('Task deleted');
+    toast.success('Task Deleted');
     onClose();
   };
 
   return (
     <Dialog open={open} onClose={onClose}>
-      <DialogTitle>Delete “{todo?.name}”?</DialogTitle>
+      <DialogTitle>
+        Delete <strong>{todo?.name}</strong>?
+      </DialogTitle>
       <DialogActions>
         <Button onClick={onClose}>Cancel</Button>
         <Button variant="contained" color="error" onClick={handleDelete}>

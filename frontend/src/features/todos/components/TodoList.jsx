@@ -5,6 +5,7 @@ import { useAddTodo } from '../hooks';
 import { Lanes } from '../../lanes';
 import { getOperationName } from '@apollo/client/utilities';
 import { LANES_TODOS_QUERY } from '../../../api/graphql/queries';
+import { toast } from 'react-toastify/dist/index.js';
 
 const Wrapper = styled.div`
   display: flex;
@@ -104,6 +105,8 @@ const TodoList = () => {
       awaitRefetchQueries: true,
       refetchQueries: [getOperationName(LANES_TODOS_QUERY)],
     });
+
+    toast.success('New Task Added');
   };
 
   const applyFilter = (text) => {
