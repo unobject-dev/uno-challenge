@@ -20,12 +20,15 @@ const createItem = async ({ name }) => {
   return true;
 };
 
-const renameItem = async ({ id, name }) => {
-  if (!name?.trim()) {
+const renameItem = async (todo) => {
+  const todoId = todo.id;
+  delete todo.id;
+
+  if (todo.name && !todo.name?.trim()) {
     throw new Error('Name cannot be empty');
   }
 
-  const updated = await repository.updateNameById(id, name.trim());
+  const updated = await repository.update(todoId, todo);
 
   if (!updated) {
     throw new Error('Item not found');

@@ -11,7 +11,7 @@ const Todo = sequelize.define('Todo', {
   deleted_at:{ type: DataTypes.DATE },
 }, { tableName: 'todos', timestamps: false, paranoid: false });
 
-Todo.belongsTo(Lane, { foreignKey: 'lane_id' });
-Lane.hasMany(Todo, { foreignKey: 'lane_id' });
+Todo.belongsTo(Lane, { foreignKey: 'lane_id', as: 'lane' });
+Lane.hasMany(Todo, { foreignKey: 'lane_id', as: 'todos' });
 
 module.exports = Todo;

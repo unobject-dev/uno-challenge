@@ -5,6 +5,12 @@ const listLanes = async () => {
   return lanes;
 };
 
+const listLanesWithTodo = async () => {
+  const yago = await repo.laneWIthTodos();
+  console.log(yago, 'yago')
+  return yago;
+};
+
 const getLane = async (id) => {
   const lane = await repo.findById(id);
   return lane;
@@ -16,7 +22,6 @@ const addLane = async (values) => {
 };
 
 const editLane = async (id, values) => {
-  console.log('caiu no server');
   const lane = await repo.update(id, values);
   return lane;
 };
@@ -32,4 +37,5 @@ module.exports = {
   addLane,
   editLane,
   deleteLane,
+  listLanesWithTodo,
 };

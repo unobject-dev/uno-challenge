@@ -10,6 +10,12 @@ const queryResolvers = {
     const row = await service.getLane(id);
     return row;
   },
+
+  lanesWithItem: async (_parent, { id }) => {
+    const rows = await service.listLanesWithTodo();
+    return rows;
+  },
+
 };
 
 const mutationResolvers = {

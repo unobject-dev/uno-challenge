@@ -1,4 +1,14 @@
 const Lane = require('./lane.model');
+const Todo = require('../todo/todo.model');
+
+const laneWIthTodos = async () => {
+  const lanes = await Lane.findAll({
+    include: { model: Todo, as: 'todos' },
+    order: [['position', 'ASC']],
+  });
+
+  return lanes.map(lane => lane.get({ plain: true }));
+}
 
 const findAll = async () => {
   const rows = await Lane.findAll({ order: [['position', 'ASC']] });
@@ -37,4 +47,5 @@ module.exports = {
   create,
   update,
   remove,
+  laneWIthTodos,
 };

@@ -28,12 +28,16 @@ const insert = async (name) => {
   return created;
 };
 
-const updateNameById = async (id, name) => {
-  const [rows] = await Todo.update({ name }, { where: { id } });
+const update = async (id, values) => {
+  const [rows] = await Todo.update(values, { where: { id } });
   const success = rows === 1;
 
   return success;
 };
+
+const updateLaneId = async (id, laneId) => {
+  await Todo.update({ lane_id: laneId }, { where: { id } });
+}
 
 const deleteById = async (id) => {
   const rows = await Todo.destroy({ where: { id } });
@@ -46,6 +50,7 @@ module.exports = {
   findAll,
   findByName,
   insert,
-  updateNameById,
+  update,
   deleteById,
+  updateLaneId,
 };
