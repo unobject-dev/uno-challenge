@@ -1,8 +1,9 @@
 import styled from 'styled-components';
 import { DragDropContext } from '@hello-pangea/dnd';
-import { useLanes, LaneColumn } from '../../lanes';
+import { LaneColumn } from '../../lanes';
 import TodoItem from '../../todos/components/TodoItem';
 import { useUpdateTodo } from '../../todos/hooks';
+import { useLanesWithTodos } from '../hooks';
 
 const Row = styled.div`
   display: flex;
@@ -18,27 +19,14 @@ const ScrollBox = styled.div`
 `;
 
 const Lanes = ({ todos }) => {
-  const { data, loading } = useLanes();
+  const { data, loading } = useLanesWithTodos();
   const [updateTodo] = useUpdateTodo();
 
   if (loading) {
     return null;
   }
 
-  const lanes = data?.lanes ?? [];
-  const backlog = lanes.find((l) => l.position === 0) ?? null;
-
-  const grouped = {};
-  lanes.forEach((l) => {
-    grouped[l.id] = [];
-  });
-
-  todos.forEach((t) => {
-    const laneId = grouped[t.lane_id] ? t.lane_id : backlog?.id;
-    if (laneId) {
-      grouped[laneId].push(t);
-    }
-  });
+  const lanes = data?.lanesWithItem ?? [];
 
   const onDragEnd = async (result) => {
     const { destination, draggableId } = result;
@@ -47,22 +35,23 @@ const Lanes = ({ todos }) => {
       return;
     }
 
-    const destLaneId = parseInt(destination.droppableId, 10);
+    const destLaneId = parseInt(destination.droppableId, 10) - 1;
     const todoId = parseInt(draggableId, 10);
-    console.log('vai atualizar');
-    const resulyt = await updateTodo({
-      variables: { values: { id: todoId, lane_id: destLaneId } },
+
+    const todoData = todos.find(todoItem => todoItem.id === todoId);
+    const updatedTodo = {...todoData, lane_id: destLaneId};
+    delete updatedTodo.__typename;
+
+    await updateTodo({
+      variables: { values: updatedTodo },
       awaitRefetchQueries: true,
-    }).catch(err => err);
-
-    console.log(resulyt, 'result');
+    });
   };
-
+  console.log(lanes, 'lanes')
   const columns = lanes
     .slice()
-    .sort((a, b) => a.position - b.position)
     .map((lane) => {
-      const list = grouped[lane.id] ?? [];
+      const list = lane.todos;
 
       const body = (
         <ScrollBox>

@@ -1,15 +1,10 @@
 import { useState } from 'react';
 import {
-  List,
-  ListItem,
-  ListItemButton,
-  ListItemText,
   TextField,
   Button,
 } from '@mui/material';
-import { Edit, Delete } from '@mui/icons-material';
 import styled from 'styled-components';
-import { useTodos, useAddTodo } from '../hooks';
+import { useAddTodo } from '../hooks';
 import { Lanes } from '../../lanes';
 import { getOperationName } from '@apollo/client/utilities';
 import { TODOS_QUERY } from '../../../api/graphql/queries';
@@ -99,26 +94,8 @@ const TodoForm = ({ onSave }) => {
   );
 };
 
-const TodoItem = ({ todo }) => {
-  const remove = () => {};
-  const rename = () => {};
-
-  return (
-    <ListItem
-      disablePadding
-      sx={{ mb: 1, borderRadius: 1, background: '#fff' }}
-    >
-      <ListItemButton dense>
-        <ListItemText primary={todo.name} />
-        <Edit sx={{ cursor: 'pointer', mr: 1 }} onClick={rename} />
-        <Delete sx={{ cursor: 'pointer' }} onClick={remove} />
-      </ListItemButton>
-    </ListItem>
-  );
-};
 
 const TodoList = () => {
-  const { data: todoData, loading, refetch } = useTodos();
   const [addTodo] = useAddTodo();
 
   const saveTodo = async (name) => {
@@ -138,19 +115,13 @@ const TodoList = () => {
     refetch({ filter });
   };
 
-  if (loading) {
-    return <p style={{ color: '#fff' }}>Loading…</p>;
-  }
-
-  const todos = todoData?.todoList ?? [];
-
   return (
     <Wrapper>
       <Card>
         <h2 style={{ margin: 0, textAlign: 'center' }}>TODO LIST</h2>
         <Toolbar onApply={applyFilter} />
         <TodoForm onSave={saveTodo} />
-        <Lanes todos={todos} />
+        <Lanes />
       </Card>
     </Wrapper>
   );
