@@ -29,11 +29,21 @@ const Row = styled.div`
   gap: 16px;
 `;
 
-const Toolbar = ({ onApply }) => {
+const Toolbar = ({ onApply, isFiltered }) => {
   const [text, setText] = useState('');
 
-  const apply = () => {
-    onApply(text.trim());
+  const toggle = () => {
+    const value = isFiltered ? '' : text.trim();
+
+    if (!isFiltered && !value) {
+      return;
+    }
+
+    onApply(value);
+
+    if (isFiltered) {
+      setText('');
+    }
   };
 
   return (
@@ -45,8 +55,13 @@ const Toolbar = ({ onApply }) => {
         onChange={(e) => setText(e.target.value)}
         sx={{ flex: 1 }}
       />
-      <Button variant="contained" color="info" sx={{ minWidth: 100 }} onClick={apply}>
-        Apply
+      <Button
+        variant="contained"
+        color={isFiltered ? 'secondary' : 'info'}
+        sx={{ minWidth: 100 }}
+        onClick={toggle}
+      >
+        {isFiltered ? 'Clear' : 'Apply'}
       </Button>
     </Row>
   );
@@ -71,7 +86,12 @@ const TodoForm = ({ onSave }) => {
           onChange={(e) => setName(e.target.value)}
           sx={{ flex: 1 }}
         />
-        <Button type="submit" variant="contained" color="success" sx={{ minWidth: 100 }}>
+        <Button
+          type="submit"
+          variant="contained"
+          color="success"
+          sx={{ minWidth: 100 }}
+        >
           Save
         </Button>
       </Row>
@@ -82,6 +102,7 @@ const TodoForm = ({ onSave }) => {
 const TodoList = () => {
   const [addTodo] = useAddTodo();
   const { refetch } = useLanesWithTodos();
+  const [filtered, setFiltered] = useState(false);
 
   const saveTodo = async (name) => {
     if (!name) {
@@ -100,13 +121,14 @@ const TodoList = () => {
   const applyFilter = (text) => {
     const filter = text ? { name: text } : null;
     refetch({ filter });
+    setFiltered(!!text);
   };
 
   return (
     <Wrapper>
       <Card>
         <h2 style={{ margin: 0, textAlign: 'center' }}>TODO LIST</h2>
-        <Toolbar onApply={applyFilter} />
+        <Toolbar onApply={applyFilter} isFiltered={filtered} />
         <TodoForm onSave={saveTodo} />
         <Lanes />
       </Card>
