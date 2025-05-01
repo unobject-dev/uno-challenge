@@ -6,9 +6,8 @@ const listLanes = async () => {
 };
 
 const listLanesWithTodo = async () => {
-  const yago = await repo.laneWIthTodos();
-  console.log(yago, 'yago')
-  return yago;
+  const lanesWithTodo = await repo.laneWIthTodos();
+  return lanesWithTodo;
 };
 
 const getLane = async (id) => {
