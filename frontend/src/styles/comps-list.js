@@ -17,7 +17,7 @@ const ContainerTop = styled.form`
 	border-radius: 5px;
 `;
 
-const ContainerList = styled.div`
+const ContainerCard = styled.div`
 	display: flex;
 	width: 600px;
 	background-color: #dcdcdc;
@@ -62,7 +62,7 @@ const Title = styled.div`
 export {
 	Container,
 	ContainerTop,
-	ContainerList,
+	ContainerCard,
 	ContainerListItem,
 	ContainerButton,
 	ContainerInput,

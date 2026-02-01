@@ -3,14 +3,14 @@ import ListItemText from "@mui/material/ListItemText";
 import ListItem from "@mui/material/ListItem";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
-import { ContainerError } from "./item-styles";
+import { ContainerError } from "../../styles/comps-item";
 
 import { Delete, Edit, Save, ArrowBack } from "@mui/icons-material";
 import { useMutation } from "@apollo/client";
-import { DELETE_ITEM_MUTATION, GET_TODO_LIST, UPDATE_ITEM_MUTATION } from "../queries";
+import { DELETE_ITEM_MUTATION, GET_TODO_LIST, UPDATE_ITEM_MUTATION } from "../../queries/itens";
 import { getOperationName } from "@apollo/client/utilities";
 import { useContext, useEffect, useState } from "react";
-import { DialogContext } from "../dialog/dialog-ctx";
+import { DefaultContext } from "../../context/ctx";
 
 export function ItemToDo({ value }) {
 	const [isEditing, setIsEditing] = useState(false);
@@ -18,7 +18,7 @@ export function ItemToDo({ value }) {
 	const [error, setError] = useState("");
 	const [updateItem] = useMutation(UPDATE_ITEM_MUTATION);
 	const [deleteItem] = useMutation(DELETE_ITEM_MUTATION);
-	const { setData } = useContext(DialogContext);
+	const { setCtxData } = useContext(DefaultContext);
 
 	useEffect(() => {
 		if (!error) return;
@@ -32,13 +32,16 @@ export function ItemToDo({ value }) {
 
 	// Abre o alerta de confirmação de exclusão
 	const onDeleteConfirm = () => {
-		setData({
-			title: "Confirmar exclusão",
-			message: "Deseja realmente deletar este item?",
-			buttons: {
-				confirm: () => onDelete(value?.id)
+		setCtxData((prev) => ({
+			...prev,
+			dialog: {
+				title: "Confirmar exclusão",
+				message: "Deseja realmente deletar este item?",
+				buttons: {
+					confirm: () => onDelete(value?.id)
+				}
 			}
-		});
+		}));
 	}
 
 	// Deleta o item selecionado
@@ -53,7 +56,10 @@ export function ItemToDo({ value }) {
 				setError(error?.message);
 			},
 			onCompleted: () => {
-				setData(false);
+				setCtxData((prev) => ({
+					...prev,
+					dialog: false
+				}));
 			}
 		});
 	};

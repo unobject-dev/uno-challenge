@@ -1,12 +1,12 @@
 import { Button, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions } from "@mui/material";
-import { DialogContext } from "./dialog-ctx";
+import { DefaultContext } from "../context/ctx";
 import { useContext } from "react";
 
 export default function DialogWrapper() {
-	const { data, setData } = useContext(DialogContext);
+	const { ctxData, setCtxData } = useContext(DefaultContext);
 
 	const onClose = () => {
-		setData(false);
+		setCtxData((prev) => ({ ...prev, dialog: false }));
 	}
 
 	return (
@@ -16,22 +16,21 @@ export default function DialogWrapper() {
 			aria-describedby="alert-dialog-description"
 		>
 			<DialogTitle id="alert-dialog-title">
-				{data?.title}
+				{ctxData.dialog?.title}
 			</DialogTitle>
 			<DialogContent>
 				<DialogContentText id="alert-dialog-description">
-					{data?.message}
+					{ctxData.dialog?.message}
 				</DialogContentText>
 			</DialogContent>
 			<DialogActions>
-				<Button autoFocus onClick={data?.buttons?.confirm}>
-					{data?.buttons?.confirm_label || "Confirmar"}
+				<Button autoFocus onClick={ctxData.dialog?.buttons?.confirm}>
+					{ctxData.dialog?.buttons?.confirm_label || "Confirmar"}
 				</Button>
 				<Button autoFocus onClick={onClose}>
-					{data?.buttons?.cancel_label || "Cancelar"}
+					{ctxData.dialog?.buttons?.cancel_label || "Cancelar"}
 				</Button>
 			</DialogActions>
-
 		</Dialog>
 	)
 }

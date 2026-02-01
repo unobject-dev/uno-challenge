@@ -5,10 +5,12 @@ import {
 	InMemoryCache,
 } from "@apollo/client";
 import { setContext } from "@apollo/client/link/context";
+import { RouterProvider } from "react-router-dom";
 import "./App.css";
-import List from "./list/list";
-import { DialogContextProvider } from "./dialog/dialog-ctx";
-
+import { DefaultContextProvider, DefaultContext } from "./context/ctx";
+import DialogWrapper from "./util/dialog-wrapper";
+import router from "./routes/routes";
+import { useContext } from "react";
 
 const httpLink = createHttpLink({
 	uri: process.env.REACT_APP_GRAPHQL_URI,
@@ -27,20 +29,27 @@ const client = new ApolloClient({
 	cache: new InMemoryCache(),
 });
 
-
-
-function App() {
+// Um componente pra permitir useContext fique dentro do provider
+function AppContent() {
+	const { ctxData } = useContext(DefaultContext);
 
 	return (
-		<DialogContextProvider>
+		<>
+			<div className="App">
+				<RouterProvider router={router} />
+			</div>
+			{ctxData.dialog && <DialogWrapper />}
+		</>
+	);
+}
+
+function App() {
+	return (
+		<DefaultContextProvider>
 			<ApolloProvider client={client}>
-				<div className="App">
-					<header className="App-header">
-						<List />
-					</header>
-				</div>
+				<AppContent />
 			</ApolloProvider>
-		</DialogContextProvider>
+		</DefaultContextProvider>
 	);
 }
 

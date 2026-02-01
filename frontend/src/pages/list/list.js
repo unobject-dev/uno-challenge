@@ -1,34 +1,39 @@
 import { useMutation, useQuery } from "@apollo/client";
-import { ADD_ITEM_MUTATION, GET_TODO_LIST } from "../queries";
+import { ADD_ITEM_MUTATION, GET_TODO_LIST } from "../../queries/itens";
 import List from "@mui/material/List";
 import { Button, TextField } from "@mui/material";
 import { Refresh } from "@mui/icons-material";
 
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { getOperationName } from "@apollo/client/utilities";
 // Separado para facilitar leitura do código
 import {
-	Container, ContainerTop, ContainerList,
+	Container, ContainerTop, ContainerCard,
 	ContainerListItem, ContainerButton, ContainerInput, ContainerError,
 	Title
-} from "./list-styles";
-import { ItemToDo } from "../item/item-to-do";
-import { DialogContext } from "../dialog/dialog-ctx";
-import DialogWrapper from "../dialog/dialog-wrapper";
+} from "../../styles/comps-list";
+import { ItemToDo } from "./item";
+
+import { useParams } from "react-router-dom";
 
 const ERROR_MESSAGE_TIMEOUT = 10000;
 const DEFAULT_MESSAGE_TIMEOUT = 5000;
 
 export default function CheckboxList() {
+	const params = useParams();
 	const [item, setItem] = useState("");
 	const [error, setError] = useState(null);
-	const { data, refetch, loading } = useQuery(GET_TODO_LIST);
+	const { data, refetch, loading } = useQuery(GET_TODO_LIST, {
+		variables: {
+			id: Number(params.id),
+		},
+	});
 	const [addItem] = useMutation(ADD_ITEM_MUTATION, {
 		onError: (error) => {
 			setError({ message: error?.message, timeout: ERROR_MESSAGE_TIMEOUT });
 		}
 	});
-	const { data: hasCtxData } = useContext(DialogContext);
+
 
 	// Configuração para esconder o erro depois de um determinado periodo de tempo em ms
 	useEffect(() => {
@@ -75,13 +80,14 @@ export default function CheckboxList() {
 
 		refetch({
 			filter: value ? { name: value } : null,
+			id: Number(params.id)
 		});
 	};
 
 	return (
-		<>
+		<div className="App-header">
 			<Container>
-				<ContainerList>
+				<ContainerCard>
 					<Title>TODO LIST</Title>
 					<ContainerTop onSubmit={onSubmit}>
 						<ContainerInput>
@@ -130,9 +136,8 @@ export default function CheckboxList() {
 					}
 					{(!loading && !data?.todoList?.length) && <p>Nenhum item encontrado</p>}
 					{loading && <p>Carregando...</p>}
-				</ContainerList>
-				{hasCtxData && <DialogWrapper />}
+				</ContainerCard>
 			</Container>
-		</>
+		</div>
 	);
 }
