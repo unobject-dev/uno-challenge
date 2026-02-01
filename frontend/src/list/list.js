@@ -1,27 +1,31 @@
-import List from "@mui/material/List";
-import { Button, TextField } from "@mui/material";
 import { useMutation, useQuery } from "@apollo/client";
 import { ADD_ITEM_MUTATION, GET_TODO_LIST } from "../queries";
+import List from "@mui/material/List";
+import { Button, TextField } from "@mui/material";
+import { Refresh } from "@mui/icons-material";
 
 import { useContext, useEffect, useState } from "react";
 import { getOperationName } from "@apollo/client/utilities";
 // Separado para facilitar leitura do código
 import {
 	Container, ContainerTop, ContainerList,
-	ContainerListItem, ContainerButton, ContainerError,
+	ContainerListItem, ContainerButton, ContainerInput, ContainerError,
 	Title
 } from "./list-styles";
 import { ItemToDo } from "../item/item-to-do";
 import { DialogContext } from "../dialog/dialog-ctx";
 import DialogWrapper from "../dialog/dialog-wrapper";
 
+const ERROR_MESSAGE_TIMEOUT = 10000;
+const DEFAULT_MESSAGE_TIMEOUT = 5000;
+
 export default function CheckboxList() {
 	const [item, setItem] = useState("");
 	const [error, setError] = useState(null);
-	const { data, refetch, } = useQuery(GET_TODO_LIST);
+	const { data, refetch, loading } = useQuery(GET_TODO_LIST);
 	const [addItem] = useMutation(ADD_ITEM_MUTATION, {
 		onError: (error) => {
-			setError({ message: error?.message, timeout: 10000 });
+			setError({ message: error?.message, timeout: ERROR_MESSAGE_TIMEOUT });
 		}
 	});
 	const { data: hasCtxData } = useContext(DialogContext);
@@ -32,10 +36,9 @@ export default function CheckboxList() {
 
 		const timer = setTimeout(() => {
 			setError(null);
-		}, error.timeout ?? 5000);
+		}, error.timeout ?? DEFAULT_MESSAGE_TIMEOUT);
 
 		return () => clearTimeout(timer);
-
 	}, [error]);
 
 	// Chamada para o backend de adição de um novo item
@@ -44,7 +47,7 @@ export default function CheckboxList() {
 
 		// Verifica se o valor é vazio ou é composto apenas por espaços
 		if (!item.trim()) {
-			setError({ message: "Não serão permitidos valores vazios!", timeout: 5000 });
+			setError({ message: "Não serão permitidos valores vazios!", timeout: DEFAULT_MESSAGE_TIMEOUT });
 			return;
 		}
 
@@ -56,14 +59,22 @@ export default function CheckboxList() {
 			},
 			awaitRefetchQueries: true,
 			refetchQueries: [getOperationName(GET_TODO_LIST)],
+			onCompleted: () => {
+				setItem("");
+				setError(null);
+			}
 		});
-		setItem("");
 	};
 
 	// Filtro de itens do todo list
-	const onFilter = async () => {
+	const onFilter = (clear = false) => {
+		const value = !clear ? item : '';
+		if (clear) {
+			setItem("");
+		}
+
 		refetch({
-			filter: item ? { name: item } : null,
+			filter: value ? { name: value } : null,
 		});
 	};
 
@@ -73,47 +84,52 @@ export default function CheckboxList() {
 				<ContainerList>
 					<Title>TODO LIST</Title>
 					<ContainerTop onSubmit={onSubmit}>
-						<TextField
-							id="item"
-							label="Digite aqui"
-							value={item}
-							type="text"
-							variant="standard"
-							onChange={(e) => setItem(e?.target?.value)}
-						/>
+						<ContainerInput>
+							<TextField
+								id="item"
+								label="Digite aqui"
+								value={item}
+								type="text"
+								variant="standard"
+								sx={{ width: "100%" }}
+								onChange={(e) => setItem(e.target.value)}
+							/>
+							<Button variant="contained" sx={{ width: "42px", height: "42px", minWidth: "0px" }} color="info" type="button"
+								onClick={() => onFilter(true)}>
+								<Refresh />
+							</Button>
+						</ContainerInput>
 						<ContainerButton>
 							<Button
 								variant="contained"
 								sx={{ width: "100%" }}
 								color="info"
-								onClick={onFilter}
+								onClick={() => onFilter(false)}
 								type="button"
-							>
-								Filtrar
-							</Button>
+							> Filtrar </Button>
 							<Button
 								variant="contained"
 								sx={{ width: "100%" }}
 								color="success"
 								type="submit"
-							>
-								Salvar
-							</Button>
+							> Salvar </Button>
 						</ContainerButton>
 						{
 							error && <ContainerError>{error.message}</ContainerError>
 						}
 					</ContainerTop>
 
-					<List sx={{ width: "100%" }}>
-						<ContainerListItem>
-							{data?.todoList?.map((value, index) => {
-								return (
-									<ItemToDo key={index} value={value} />
-								);
-							})}
-						</ContainerListItem>
-					</List>
+					{
+						(!loading && data?.todoList?.length > 0) && <List sx={{ width: "100%" }}>
+							<ContainerListItem>
+								{data?.todoList?.map((value) =>
+									<ItemToDo key={value?.id} value={value} />
+								)}
+							</ContainerListItem>
+						</List>
+					}
+					{(!loading && !data?.todoList?.length) && <p>Nenhum item encontrado</p>}
+					{loading && <p>Carregando...</p>}
 				</ContainerList>
 				{hasCtxData && <DialogWrapper />}
 			</Container>

@@ -5,11 +5,11 @@ import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import { ContainerError } from "./item-styles";
 
-import { Delete, Edit } from "@mui/icons-material";
+import { Delete, Edit, Save, ArrowBack } from "@mui/icons-material";
 import { useMutation } from "@apollo/client";
 import { DELETE_ITEM_MUTATION, GET_TODO_LIST, UPDATE_ITEM_MUTATION } from "../queries";
 import { getOperationName } from "@apollo/client/utilities";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { DialogContext } from "../dialog/dialog-ctx";
 
 export function ItemToDo({ value }) {
@@ -20,8 +20,18 @@ export function ItemToDo({ value }) {
 	const [deleteItem] = useMutation(DELETE_ITEM_MUTATION);
 	const { setData } = useContext(DialogContext);
 
-	// Chamada para o para deletar o item selecionado
-	const onDeleteConfirm = async () => {
+	useEffect(() => {
+		if (!error) return;
+
+		const timer = setTimeout(() => {
+			setError("");
+		}, 10000);
+
+		return () => clearTimeout(timer);
+	}, [error]);
+
+	// Abre o alerta de confirmação de exclusão
+	const onDeleteConfirm = () => {
 		setData({
 			title: "Confirmar exclusão",
 			message: "Deseja realmente deletar este item?",
@@ -30,6 +40,8 @@ export function ItemToDo({ value }) {
 			}
 		});
 	}
+
+	// Deleta o item selecionado
 	const onDelete = async (itemId) => {
 		await deleteItem({
 			variables: {
@@ -39,9 +51,11 @@ export function ItemToDo({ value }) {
 			refetchQueries: [getOperationName(GET_TODO_LIST)],
 			onError: (error) => {
 				setError(error?.message);
+			},
+			onCompleted: () => {
+				setData(false);
 			}
 		});
-		setData(false);
 	};
 
 	// Muda o estilo do item para modo de edição de valores
@@ -52,6 +66,11 @@ export function ItemToDo({ value }) {
 
 	// Chamada para o backend para atualizar o item selecionado
 	const onUpdate = async (itemId) => {
+		if (!editedName.trim()) {
+			setError("Não serão permitidos valores vazios!");
+			return;
+		}
+
 		await updateItem({
 			variables: {
 				values: {
@@ -81,12 +100,12 @@ export function ItemToDo({ value }) {
 			alignItems: "stretch",
 		}}
 	>
-		<ListItemButton dense>
+		<ListItemButton dense sx={{ gap: "10px" }}>
 			{
 				!isEditing && <>
 					<ListItemText id={value?.id} primary={value?.name} />
 					<Edit onClick={onEdit} />
-					<Delete onClick={() => onDeleteConfirm()} />
+					<Delete onClick={onDeleteConfirm} />
 				</>
 			}
 			{
@@ -94,19 +113,29 @@ export function ItemToDo({ value }) {
 					<TextField
 						id="item"
 						label="Digite o nome da tarefa"
-						sx={{ width: "80%" }}
+						sx={{ width: "100%" }}
 						value={editedName}
 						onChange={(e) => setEditedName(e.target.value)}
 						type="text"
 						variant="standard"
 					/>
+					{/* Botão de salvar */}
 					<Button
 						variant="contained"
-						sx={{ width: "20%" }}
+						sx={{ width: "42px", height: "42px", minWidth: "0px", cursor: "pointer" }}
 						color="success"
 						onClick={() => onUpdate(value?.id)}
 					>
-						Salvar
+						<Save />
+					</Button>
+					{/* Botão de cancelar */}
+					<Button
+						variant="contained"
+						sx={{ width: "42px", height: "42px", minWidth: "0px", cursor: "pointer" }}
+						color="info"
+						onClick={() => setIsEditing(false)}
+					>
+						<ArrowBack />
 					</Button>
 				</>
 			}

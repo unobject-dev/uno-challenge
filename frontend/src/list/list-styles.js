@@ -41,6 +41,13 @@ const ContainerButton = styled.div`
 	gap: 10px;
 `;
 
+const ContainerInput = styled.div`
+	display: flex;
+	flex-direction: row;
+	align-items: flex-end;
+	gap: 10px;
+`;
+
 const ContainerError = styled.div`
 	color: red;
 	font-size: 13px;
@@ -58,6 +65,7 @@ export {
 	ContainerList,
 	ContainerListItem,
 	ContainerButton,
+	ContainerInput,
 	ContainerError,
 	Title,
 };
