@@ -133,7 +133,7 @@ crm/
 
 ## ❓ Dúvidas
 
-Se tiver qualquer dúvida sobre os requisitos, entre em contato pelo email: **[SEU_EMAIL_AQUI]**
+Se tiver qualquer dúvida sobre os requisitos, entre em contato pelo whatsapp: **(47) 93300-8369**
 
 Boa sorte! 🚀
 
